@@ -17,7 +17,10 @@ public class PersonController {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Person> findAll() {
+    public List<Person> findAll(@RequestParam(required = false) String firstname) {
+        if (firstname != null) {
+            return service.findByFirstname(firstname);
+        }
         return service.findAll();
     }
 
