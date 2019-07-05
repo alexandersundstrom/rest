@@ -20,10 +20,10 @@ All dependencies are handled using [Maven](https://maven.apache.org/).
 ## Requirements
 A postgresql database needs to be running with the credentials specified in `application.properties`. Update them if needed.
 
-## Setup
 To download this repo:
 * `git clone https://github.com/alexandersundstrom/rest.git`
 
+## Run the application
 To start the application in IntelliJ:
 * Run `Application.java`
 
