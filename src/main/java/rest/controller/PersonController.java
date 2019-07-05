@@ -1,14 +1,15 @@
 package rest.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PersonController {
 
 
-    @RequestMapping("/ping")
+    @RequestMapping(method = RequestMethod.GET, value = "/ping")
     public String ping() {
-          return "Hello world";
+        return "Hello world";
     }
 }
