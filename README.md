@@ -29,7 +29,7 @@ To start the application in IntelliJ:
 
 To start the application in the terminal:
 * `cd /path/to/repo`
-* `mvn clean package` (only first time and when changes has beed done)
+* `mvn clean package` (only first time and when changes has been done)
 * `java -jar target/rest-api-1.0-SNAPSHOT.jar`
 
 
