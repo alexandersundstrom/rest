@@ -17,28 +17,31 @@ public class PersonController {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Person> getPersons() {
+    public List<Person> findAll() {
         return service.findAll();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    public Optional<Person> getPerson(@PathVariable Long id) {
+    public Optional<Person> findById(@PathVariable Long id) {
         return service.findById(id);
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public Person createPerson(@RequestBody Person person) {
+        //validation
         return service.save(person);
     }
 
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-    public Person updatePerson(@RequestBody Person person) {
+    public Person updatePerson(@RequestBody Person person, @PathVariable Long id) {
+        //validation
         return service.save(person);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    public void deletePerson(@PathVariable Long id) {
-       service.deleteById(id);
+    public void deleteById(@PathVariable Long id) {
+        //validation
+        service.deleteById(id);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/ping")
