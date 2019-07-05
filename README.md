@@ -20,7 +20,18 @@ All dependencies are handled using [Maven](https://maven.apache.org/).
 ## Requirements
 A postgresql database needs to be running with the credentials specified in `application.properties`. Update them if needed.
 
-## Startup
-To start the application:
+## Setup
+To download this repo:
+* `git clone https://github.com/alexandersundstrom/rest.git`
+
+To start the application in IntelliJ:
 * Run `Application.java`
-* Access [Swagger UI](http://localhost:8080/swagger-ui.html#) to view all endpoints and test their functionality.
+
+To start the application in the terminal:
+* `cd /path/to/repo`
+* `mvn clean package` (only first time and when changes has beed done)
+* `java -jar target/rest-api-1.0-SNAPSHOT.jar`
+
+
+Access [Swagger UI](http://localhost:8080/swagger-ui.html#) to view all endpoints and test their functionality once the
+application is running.
