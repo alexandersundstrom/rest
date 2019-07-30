@@ -18,7 +18,7 @@ connects the models to the database.
 All dependencies are handled using [Maven](https://maven.apache.org/).
 
 ## Prerequisites
-- Java SDK (Java 11 or 12 should do fine). [Download here.](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
+- Java SDK (Java SE 12). [Download here.](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
 - IntelliJ (Community Edition). [Download here.](https://www.jetbrains.com/idea/download/)
 - [Docker for Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) or [Docker for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac).
 - Maven. `brew install maven` on Mac and `choco install maven`. ([Install Homebrew](https://brew.sh/index_sv) or [Chocolatey](https://chocolatey.org/docs/installation) if you haven't already.)
