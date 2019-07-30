@@ -29,7 +29,8 @@ All dependencies are handled using [Maven](https://maven.apache.org/).
 - Start the database:
   - `cd path/to/repo`
   - `docker-compose up -d`
-- Start the application:
+  - (Verify that it is running with `docker ps`)
+- Start the application, either:
   - In IntelliJ:
     - Open the project in IntelliJ
     - Click dropdown in top-right corner > "Edit configurations"
@@ -37,7 +38,7 @@ All dependencies are handled using [Maven](https://maven.apache.org/).
     - Give the configuration a name (e. g. "Run app")
     - Click the three dots (`...`) next to "Main class" and select the class named `Application.java`
     - Click "OK" to close the dialog and then click "Run" or "Debug" in the top-right corner.
-  - From terminal:
+  - Or from terminal:
     - `cd /path/to/repo`
     - `mvn clean package` (only first time and when changes has been done)
     - `java -jar target/rest-api-1.0-SNAPSHOT.jar`
