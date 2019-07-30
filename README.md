@@ -28,7 +28,7 @@ All dependencies are handled using [Maven](https://maven.apache.org/).
 - Clone this repository: `git clone https://github.com/alexandersundstrom/rest.git`
 - Start the database:
   - `cd path/to/repo`
-  - `docker-compose up -d`
+  - `docker-compose up -d`. (Run `docker-compose down` to shut it down.)
   - (Verify that it is running with `docker ps`)
 - Start the application, either:
   - In IntelliJ:
