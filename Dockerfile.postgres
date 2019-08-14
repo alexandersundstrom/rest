@@ -1,0 +1,2 @@
+FROM postgres:latest
+ADD ./scripts/db/ /docker-entrypoint-initdb.d/

@@ -1,0 +1,9 @@
+# IntelliJ stuff
+.idea
+*.iml
+
+# Persisted data
+postgres-data
+
+# Compiled java and maven files
+target

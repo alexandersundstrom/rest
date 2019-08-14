@@ -17,21 +17,38 @@ connects the models to the database.
 
 All dependencies are handled using [Maven](https://maven.apache.org/).
 
-## Requirements
-A postgresql database needs to be running with the credentials specified in `application.properties`. Update them if needed.
+## Prerequisites
+- Java SDK (Java SE 12). [Download here.](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
+- IntelliJ (Community Edition). [Download here.](https://www.jetbrains.com/idea/download/)
+- [Docker for Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows) or [Docker for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac).
+- Maven. `brew install maven` on Mac and `choco install maven`. ([Install Homebrew](https://brew.sh/index_sv) or [Chocolatey](https://chocolatey.org/docs/installation) if you haven't already.)
+- Optional: PGAdmin. [Download here.](https://www.pgadmin.org/download/)
 
-To download this repo:
-* `git clone https://github.com/alexandersundstrom/rest.git`
+## Getting started
+- Clone this repository: `git clone https://github.com/alexandersundstrom/rest.git`
+- Start the database:
+  - `cd path/to/repo`
+  - `docker-compose up -d`. (Run `docker-compose down` to shut it down.)
+  - (Verify that it is running with `docker ps`)
+- Start the application, either:
+  - In IntelliJ:
+    - Open the project in IntelliJ
+    - Click dropdown in top-right corner > "Edit configurations"
+    - Click plus sign (`+`) in top-left corner > Select "Application"
+    - Give the configuration a name (e. g. "Run app")
+    - Click the three dots (`...`) next to "Main class" and select the class named `Application.java`
+    - Click "OK" to close the dialog and then click "Run" or "Debug" in the top-right corner.
+  - Or from terminal:
+    - `cd /path/to/repo`
+    - `mvn clean package` (only first time and when changes has been done)
+    - `java -jar target/rest-api-1.0-SNAPSHOT.jar`
+- Visit [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) to verify that you're done.
 
-## Run the application
-To start the application in IntelliJ:
-* Run `Application.java`
-
-To start the application in the terminal:
-* `cd /path/to/repo`
-* `mvn clean package` (only first time and when changes has been done)
-* `java -jar target/rest-api-1.0-SNAPSHOT.jar`
-
-
-Access [Swagger UI](http://localhost:8080/swagger-ui.html#) to view all endpoints and test their functionality once the
-application is running.
+Optional: Inspect your database in PGAdmin
+- Start PGAdmin (from Start Menu or Application Launcher)
+- Right-click "Servers" and select "Create" > "Server"
+- Give it a name (e. g. "rest-workshop")
+- Click "Connection" tab
+  - Host: localhost
+  - Username: springbootuser
+  - Password: admin
