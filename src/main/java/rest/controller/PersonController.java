@@ -49,6 +49,7 @@ public class PersonController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/ping")
     public String ping() {
+        System.out.println("Anrop till ping, returnerar svar");
         return "Hello world";
     }
 }
