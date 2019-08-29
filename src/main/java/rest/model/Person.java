@@ -1,19 +1,13 @@
 package rest.model;
 
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "person")
 public class Person {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+
     private Long id;
     private String firstname;
     private String lastname;
-    @OneToOne(cascade = CascadeType.ALL)
-    private Phone phone;
+
 
     public Person() {
     }
@@ -51,13 +45,5 @@ public class Person {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Phone getPhone() {
-        return phone;
-    }
-
-    public void setPhone(Phone phone) {
-        this.phone = phone;
     }
 }
