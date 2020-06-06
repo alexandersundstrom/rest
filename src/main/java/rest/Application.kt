@@ -1,12 +1,11 @@
-package rest;
+package rest
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
 @SpringBootApplication
-public class Application {
+open class Application
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
+fun main(args: Array<String>) {
+    runApplication<Application>(*args)
 }
