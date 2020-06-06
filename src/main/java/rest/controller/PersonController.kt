@@ -1,55 +1,50 @@
-package rest.controller;
+package rest.controller
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import rest.model.Person;
-import rest.service.PersonService;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.*
+import rest.model.Person
+import rest.service.PersonService
+import java.util.*
 
 @RestController
 @RequestMapping("/person")
-public class PersonController {
-
+class PersonController {
     @Autowired
-    PersonService service;
+    var service: PersonService? = null
 
-
-    @RequestMapping(method = RequestMethod.GET)
-    public List<Person> findAll(@RequestParam(required = false) String firstname) {
-        if (firstname != null) {
-            return service.findByFirstname(firstname);
-        }
-        return service.findAll();
+    @RequestMapping(method = [RequestMethod.GET])
+    fun findAll(@RequestParam(required = false) firstname: String?): List<Person?>? {
+        return if (firstname != null) {
+            service!!.findByFirstname(firstname)
+        } else service!!.findAll()
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    public Optional<Person> findById(@PathVariable Long id) {
-        return service.findById(id);
+    @RequestMapping(method = [RequestMethod.GET], value = ["/{id}"])
+    fun findById(@PathVariable id: Long): Optional<Person?> {
+        return service!!.findById(id)
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public Person createPerson(@RequestBody Person person) {
+    @RequestMapping(method = [RequestMethod.POST])
+    fun createPerson(@RequestBody person: Person): Person {
         //validation
-        return service.save(person);
+        return service!!.save(person)
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
-    public Person updatePerson(@RequestBody Person person, @PathVariable Long id) {
+    @RequestMapping(method = [RequestMethod.PUT], value = ["/{id}"])
+    fun updatePerson(@RequestBody person: Person, @PathVariable id: Long?): Person {
         //validation
-        return service.save(person);
+        return service!!.save(person)
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    public void deleteById(@PathVariable Long id) {
+    @RequestMapping(method = [RequestMethod.DELETE], value = ["/{id}"])
+    fun deleteById(@PathVariable id: Long) {
         //validation
-        service.deleteById(id);
+        service!!.deleteById(id)
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/ping")
-    public String ping() {
-        System.out.println("Anrop till ping, returnerar svar");
-        return "Hello world";
+    @RequestMapping(method = [RequestMethod.GET], value = ["/ping"])
+    fun ping(): String {
+        println("Anrop till ping, returnerar svar")
+        return "Hello world"
     }
 }

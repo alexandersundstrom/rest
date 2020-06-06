@@ -1,39 +1,37 @@
-package rest.service;
+package rest.service
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import rest.database.PersonRepository;
-import rest.model.Person;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
+import rest.database.PersonRepository
+import rest.model.Person
+import java.util.*
+import java.util.stream.Collectors
+import java.util.stream.StreamSupport
 
 @Service
-public class PersonService {
-
+class PersonService {
     @Autowired
-    PersonRepository repository;
+    var repository: PersonRepository? = null
 
-    public List<Person> findAll() {
-        return StreamSupport.stream(repository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
+    fun findAll(): List<Person> {
+//        return repository!!.findAll()
+        return StreamSupport.stream<Person>(repository!!.findAll().spliterator(), false)
+                .collect(Collectors.toList())
     }
 
-    public Optional<Person> findById(Long id) {
-        return repository.findById(id);
+    fun findById(id: Long): Optional<Person?> {
+        return repository!!.findById(id)
     }
 
-    public Person save(Person person) {
-        return repository.save(person);
+    fun save(person: Person): Person {
+        return repository!!.save(person)
     }
 
-    public void deleteById(Long id) {
-        repository.deleteById(id);
+    fun deleteById(id: Long) {
+        repository!!.deleteById(id)
     }
 
-    public List<Person> findByFirstname(String firstname) {
-        return repository.findByFirstname(firstname);
+    fun findByFirstname(firstname: String?): List<Person?>? {
+        return repository!!.findByFirstname(firstname)
     }
 }
