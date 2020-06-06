@@ -14,7 +14,6 @@ class PersonService {
     var repository: PersonRepository? = null
 
     fun findAll(): List<Person> {
-//        return repository!!.findAll()
         return StreamSupport.stream<Person>(repository!!.findAll().spliterator(), false)
                 .collect(Collectors.toList())
     }
