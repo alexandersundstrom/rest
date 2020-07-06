@@ -2,7 +2,6 @@ package rest.controller
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import rest.model.Person
 import rest.model.User
 import rest.service.UserService
 
@@ -22,7 +21,7 @@ class UserController {
     @RequestMapping(method = [RequestMethod.POST])
     fun createUser(@RequestBody user: User): User {
         //validation
-        return service!!.save(user)
+        return service!!.create(user)
     }
 
     @RequestMapping(method = [RequestMethod.PUT], value = ["/{id}"])
