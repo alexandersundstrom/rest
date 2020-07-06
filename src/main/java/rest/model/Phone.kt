@@ -6,15 +6,9 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 
 @Entity
-class Phone {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long? = null
-    var phoneNumber: String? = null
-
-    constructor() {}
-    constructor(phoneNumber: String?) {
-        this.phoneNumber = phoneNumber
-    }
-
-}
+class Phone(
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        var id: Long? = null,
+        var phoneNumber: String? = null
+)
