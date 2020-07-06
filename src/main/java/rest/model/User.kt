@@ -12,9 +12,8 @@ data class User(
         var password: String = "",
         var firstname: String = "",
         var lastname: String = "",
-        @Enumerated(EnumType.STRING)
         @OneToMany(cascade = [CascadeType.ALL])
-        var rights: List<Permissions> = listOf(),
+        var permissions: MutableList<Permissions> = mutableListOf(),
         var updated: Date? = null,
         val created: Date = Date()
 )
