@@ -15,8 +15,6 @@ data class User(
         @Enumerated(EnumType.STRING)
         @OneToMany(cascade = [CascadeType.ALL])
         var rights: List<Permissions> = listOf(),
-        var updated: Date? = null
-) {
-    val created: Date = Date()
-
-}
+        var updated: Date? = null,
+        val created: Date = Date()
+)
