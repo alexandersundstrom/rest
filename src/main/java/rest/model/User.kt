@@ -1,5 +1,6 @@
 package rest.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.util.*
 import javax.persistence.*
 
@@ -9,7 +10,7 @@ data class User(
         @Id
         val username: String = "",
         var email: String = "",
-       @Transient
+       @JsonIgnore
         var password: String = "",
         var firstname: String = "",
         var lastname: String = "",
