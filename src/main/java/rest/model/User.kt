@@ -5,22 +5,18 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "users")
-class User(
+data class User(
         @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        val id: Long? = null,
-        @Column(unique = true)
         val username: String = "",
-        val email: String = "",
+        var email: String = "",
         var password: String = "",
         var firstname: String = "",
         var lastname: String = "",
-        @OneToOne(cascade = [CascadeType.ALL])
-        var rights: Rights = Rights(),
+        @Enumerated(EnumType.STRING)
+        @OneToMany(cascade = [CascadeType.ALL])
+        var rights: List<Permissions> = listOf(),
         var updated: Date? = null
-)
-{
-    init {
-        val created = Date()
-    }
+) {
+    val created: Date = Date()
+
 }
