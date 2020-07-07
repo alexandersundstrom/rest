@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import rest.database.UserRepository
 import rest.mail.MailService
 import rest.model.User
+import rest.util.PswGenerator
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.StreamSupport
@@ -13,6 +14,7 @@ import java.util.stream.StreamSupport
 class UserService {
     @Autowired
     var repository: UserRepository? = null
+
     @Autowired
     var mailService: MailService? = null;
 
@@ -25,9 +27,9 @@ class UserService {
         return repository!!.findById(id)
     }
 
-    fun create(user:User):User {
-        mailService!!.sendTemporaryPassword("1234", user.firstname, user.email)
-        user.password = "1234"
+    fun create(user: User): User {
+        user.password = PswGenerator.temporaryPassword()
+        mailService!!.sendTemporaryPassword(user)
         return save(user);
     }
 
