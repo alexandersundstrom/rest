@@ -18,7 +18,7 @@ class MailService {
     @Autowired
     val emailSender: JavaMailSender? = null
 
-    fun sendTemporaryPassword(user: User) {
+    fun sendTemporaryPassword(user: User, psw: String) {
         val message = SimpleMailMessage()
         message.from = env!!.get("mail.from")
         message.setTo(user.email)
@@ -28,7 +28,7 @@ class MailService {
 |An account has been created with a temporary password. First time you login you must change it. 
 
 |Username: ${user.username}
-|Password: ${user.password}
+|Password: ${psw}
 |
 |Regards
 |The team""".trimMargin()

@@ -10,12 +10,14 @@ data class User(
         @Id
         val username: String = "",
         var email: String = "",
-       @JsonIgnore
+        @JsonIgnore
         var password: String = "",
+        var isTemporaryPassword: Boolean = true,
         var firstname: String = "",
         var lastname: String = "",
         @OneToMany(cascade = [CascadeType.ALL])
         var permissions: MutableList<Permission> = mutableListOf(),
         var updated: Date? = null,
-        val created: Date = Date()
+        val created: Date = Date(),
+        var failedAttempts: Long = 0
 )

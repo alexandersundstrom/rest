@@ -1,7 +1,11 @@
 package rest.controller
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import rest.exception.PasswordException
+import rest.model.ChangePswCredentials
 import rest.model.User
 import rest.service.UserService
 
@@ -40,5 +44,16 @@ class UserController {
     fun ping(): String {
         println("Anrop till ping, returnerar svar")
         return "Hello world"
+    }
+
+    @RequestMapping(method = [RequestMethod.POST], value = ["/password"])
+    fun changePassword(@RequestBody credentials: ChangePswCredentials): ResponseEntity<String> {
+        //validation
+        try {
+            service!!.changePassword(credentials)
+            return ResponseEntity.ok("OK")
+        } catch (e: PasswordException) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+        }
     }
 }
