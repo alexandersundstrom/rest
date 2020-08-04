@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import rest.database.UserRepository
 import rest.exception.PasswordException
+import rest.exception.UserException
 import rest.mail.MailService
 import rest.model.ChangePswCredentials
+import rest.model.PswCredentials
 import rest.model.User
+import rest.model.UserTO
 import rest.util.PasswordEncoder
 import rest.util.PswGenerator
 import java.util.*
@@ -67,6 +70,29 @@ class UserService {
             user.password = PasswordEncoder.encode(credentials.newPsw)
             user.updated = Date()
             save(user)
+        }
+    }
+
+    fun login(credentials: PswCredentials): UserTO {
+        val optional = findById(credentials.username)
+        if (optional.isPresent) {
+            val user = optional.get()
+            when {
+                user.isTemporaryPassword -> throw UserException("Temporary password needs to be changed before logging in.")
+                user.failedAttempts >= 3 -> throw UserException("To many failed attempts, contact support.")
+                !PasswordEncoder.matches(credentials.psw, user.password) -> {
+                    user.failedAttempts + 1
+                    save(user)
+                    throw PasswordException("Password doesn't match")
+                }
+                else -> {
+                    user.failedAttempts = 0
+                    save(user)
+                    return UserTO(user)
+                }
+            }
+        } else {
+            throw UserException("A user with username ${credentials.username} could not be found.")
         }
     }
 }
