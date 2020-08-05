@@ -20,7 +20,7 @@ open class ApplicationSecurity : WebSecurityConfigurerAdapter() {
     open fun jwtFilter(): FilterRegistrationBean<JWTFilter>? {
         val registrationBean: FilterRegistrationBean<JWTFilter> = FilterRegistrationBean<JWTFilter>()
         registrationBean.filter = JWTFilter()
-        registrationBean.addUrlPatterns("/user/*", "/auth/password/*", "/auth/update/*")
+        registrationBean.addUrlPatterns("/user/*", "/person/*", "/auth/password/*", "/auth/update/*")
         return registrationBean
     }
 }
