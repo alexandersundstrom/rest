@@ -1,5 +1,7 @@
 package rest.model
 
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 data class UserTO(
@@ -11,7 +13,8 @@ data class UserTO(
         var permissions: MutableList<Permission> = mutableListOf(),
         var updated: Date? = null,
         val created: Date = Date(),
-        var failedAttempts: Long = 0
+        var failedAttempts: Long = 0,
+        var passwordExpires: Date? = Date(Instant.now().plus(180, ChronoUnit.DAYS).toEpochMilli())
 ) {
     constructor(user: User) : this(
             username = user.username,
@@ -22,5 +25,6 @@ data class UserTO(
             permissions = user.permissions,
             updated = user.updated,
             created = user.created,
-            failedAttempts = user.failedAttempts)
+            failedAttempts = user.failedAttempts,
+            passwordExpires = user.passwordExpires)
 }

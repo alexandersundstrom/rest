@@ -12,6 +12,8 @@ import rest.model.User
 import rest.model.UserTO
 import rest.util.PasswordEncoder
 import rest.util.PswGenerator
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.StreamSupport
@@ -38,6 +40,7 @@ class UserService {
         val temporaryPassword = PswGenerator.temporaryPassword()
         user.password = PasswordEncoder.encode(temporaryPassword)
         user.isTemporaryPassword = true
+        user.passwordExpires = Date(Instant.now().plus(6, ChronoUnit.MONTHS).toEpochMilli())
 
         val savedUser = repository!!.save(user)
         mailService!!.sendTemporaryPassword(savedUser, temporaryPassword)
@@ -59,8 +62,12 @@ class UserService {
         val optional = findById(credentials.username)
         if (optional.isPresent) {
             val user = optional.get()
-            //TODO validate password, length strength etc, failed attempts
+            when {
+                user.failedAttempts >= 3 -> throw UserException("To many failed attempts, contact support.")
+            }
             if (!PasswordEncoder.matches(credentials.oldPsw, user.password)) {
+                user.failedAttempts++
+                save(user)
                 throw PasswordException("Password doesn't match the old password")
             }
 
@@ -69,6 +76,7 @@ class UserService {
             }
             user.password = PasswordEncoder.encode(credentials.newPsw)
             user.updated = Date()
+            user.passwordExpires = Date(Instant.now().plus(6, ChronoUnit.MONTHS).toEpochMilli())
             save(user)
         }
     }
@@ -85,6 +93,7 @@ class UserService {
                     save(user)
                     throw PasswordException("Password doesn't match")
                 }
+                user.passwordExpires.before(Date()) -> throw UserException("Password has expired.")
                 else -> {
                     user.failedAttempts = 0
                     save(user)
