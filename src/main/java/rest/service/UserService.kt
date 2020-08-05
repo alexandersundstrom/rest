@@ -1,8 +1,9 @@
 package rest.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import rest.database.UserRepository
 import rest.exception.PasswordException
 import rest.exception.UserException
 import rest.mail.MailService
@@ -10,6 +11,7 @@ import rest.model.ChangePswCredentials
 import rest.model.PswCredentials
 import rest.model.User
 import rest.model.UserTO
+import rest.repository.UserRepository
 import rest.util.PasswordEncoder
 import rest.util.PswGenerator
 import java.time.Instant
@@ -25,6 +27,8 @@ class UserService {
 
     @Autowired
     var mailService: MailService? = null;
+
+    var logger: Logger = LoggerFactory.getLogger(UserService::class.java)
 
     fun findAll(): List<User> {
         return StreamSupport.stream<User>(repository!!.findAll().spliterator(), false)

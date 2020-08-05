@@ -1,9 +1,11 @@
 package rest.service
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import rest.database.PersonRepository
 import rest.model.Person
+import rest.repository.PersonRepository
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.StreamSupport
@@ -12,6 +14,8 @@ import java.util.stream.StreamSupport
 class PersonService {
     @Autowired
     var repository: PersonRepository? = null
+
+    var logger: Logger = LoggerFactory.getLogger(PersonService::class.java)
 
     fun findAll(): List<Person> {
         return StreamSupport.stream<Person>(repository!!.findAll().spliterator(), false)
