@@ -36,7 +36,7 @@ class LoginController {
         try {
             val user = service!!.login(credentials)
             val header = HttpHeaders()
-            header.add("Set-Cookie", "token=${JWTUtil.create(user)}")
+            header.add("Set-Cookie", "token=${JWTUtil.create(user)}; Path=/")
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(header)
