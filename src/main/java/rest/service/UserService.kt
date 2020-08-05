@@ -81,7 +81,7 @@ class UserService {
                 user.isTemporaryPassword -> throw UserException("Temporary password needs to be changed before logging in.")
                 user.failedAttempts >= 3 -> throw UserException("To many failed attempts, contact support.")
                 !PasswordEncoder.matches(credentials.psw, user.password) -> {
-                    user.failedAttempts + 1
+                    user.failedAttempts++
                     save(user)
                     throw PasswordException("Password doesn't match")
                 }
