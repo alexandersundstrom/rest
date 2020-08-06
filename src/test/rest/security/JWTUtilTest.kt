@@ -4,25 +4,25 @@ import io.jsonwebtoken.JwtException
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import rest.model.Permission
-import rest.model.PermissionEnum
-import rest.model.UserTO
+import rest.model.db.Permission
+import rest.model.db.PermissionEnum
+import rest.model.to.UserOUT
 
 internal class JWTUtilTest {
     @Test
     fun create() {
-        assertNotNull(JWTUtil.create(UserTO()))
+        assertNotNull(JWTUtil.create(UserOUT()))
     }
 
     @Test
     fun validateValidToken() {
-        JWTUtil.validate(JWTUtil.create(UserTO(permissions = mutableListOf(Permission(1, PermissionEnum._CREATE)))))
+        JWTUtil.validate(JWTUtil.create(UserOUT(permissions = mutableListOf(Permission(1, PermissionEnum._CREATE)))))
     }
 
     @Test
     fun updateToken() {
-        val token: String = JWTUtil.create(UserTO())
-        val updatedToken = JWTUtil.update(token, UserTO())
+        val token: String = JWTUtil.create(UserOUT())
+        val updatedToken = JWTUtil.update(token, UserOUT())
         assertNotNull(updatedToken)
         JWTUtil.validate(updatedToken)
     }

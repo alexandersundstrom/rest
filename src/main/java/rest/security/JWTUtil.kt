@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
-import rest.model.UserTO
+import rest.model.to.UserOUT
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -13,7 +13,7 @@ class JWTUtil() {
     companion object {
         private val key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
 
-        fun create(user: UserTO) = Jwts
+        fun create(user: UserOUT) = Jwts
                 .builder()
                 .claim("user", ObjectMapper().writeValueAsString(user))
                 .setIssuedAt(Date())
@@ -26,7 +26,7 @@ class JWTUtil() {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token)
         }
 
-        fun update(token: String, user: UserTO): String {
+        fun update(token: String, user: UserOUT): String {
             validate(token)
             return create(user)
         }

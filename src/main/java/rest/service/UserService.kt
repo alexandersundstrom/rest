@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import rest.exception.PasswordException
 import rest.exception.UserException
-import rest.mail.MailService
-import rest.model.ChangePswCredentials
-import rest.model.PswCredentials
-import rest.model.User
-import rest.model.UserTO
+import rest.model.db.User
+import rest.model.to.ChangePswCredentialsIN
+import rest.model.to.PswCredentialsIN
+import rest.model.to.UserIN
+import rest.model.to.UserOUT
 import rest.repository.UserRepository
 import rest.util.PasswordEncoder
 import rest.util.PswGenerator
@@ -30,82 +30,103 @@ class UserService {
 
     var logger: Logger = LoggerFactory.getLogger(UserService::class.java)
 
-    fun findAll(): List<User> {
+    fun findAll(): List<UserOUT> {
         return StreamSupport.stream<User>(repository!!.findAll().spliterator(), false)
+                .map { UserOUT(it) }
                 .collect(Collectors.toList())
     }
 
-    fun findById(id: String): Optional<User?> {
-        return repository!!.findById(id)
+    fun findById(id: String): Optional<UserOUT> {
+        val user = repository!!.findById(id)
+        if (user.isPresent) {
+            return Optional.of(UserOUT(user.get()))
+        }
+        return Optional.empty()
     }
 
-    fun create(user: User): User {
-        //VALIDATE
+    fun create(userIN: UserIN): UserOUT {
+        //TODO VALIDATE
+        if (repository!!.existsById(userIN.username)) throw UserException("A user already exists with username: ${userIN.username} ")
+
         val temporaryPassword = PswGenerator.temporaryPassword()
-        user.password = PasswordEncoder.encode(temporaryPassword)
-        user.isTemporaryPassword = true
-        user.passwordExpires = Date(Instant.now().plus(6, ChronoUnit.MONTHS).toEpochMilli())
+        val user = User(userIN).copy(
+                created = Date(),
+                password = temporaryPassword,
+                isTemporaryPassword = true,
+                passwordExpires = Date(Instant.now().plus(6, ChronoUnit.MONTHS).toEpochMilli()))
 
         val savedUser = repository!!.save(user)
         mailService!!.sendTemporaryPassword(savedUser, temporaryPassword)
-        return savedUser
+        return UserOUT(savedUser)
     }
 
-    fun save(user: User): User {
-        //VALIDATE
-        user.updated = Date()
-        //fetch password and set
-        return repository!!.save(user)
+    fun save(userIN: UserIN): UserOUT {
+        val optional = repository!!.findById(userIN.username)
+        if (optional.isEmpty) throw UserException("No user found with username: ${userIN.username}.")
+
+        val original = optional.get()
+
+        val toSave = User(userIN).copy(
+                password = original.password,
+                updated = Date(),
+                isTemporaryPassword = original.isTemporaryPassword,
+                created = original.created,
+                failedAttempts = original.failedAttempts,
+                passwordExpires = original.passwordExpires
+        )
+
+        val updated = repository!!.save(toSave)
+        return UserOUT(updated)
     }
 
     fun deleteById(id: String) {
+        if (!repository!!.existsById(id)) throw UserException("No user found with username: $id} ")
         repository!!.deleteById(id)
     }
 
-    fun changePassword(credentials: ChangePswCredentials) {
-        val optional = findById(credentials.username)
-        if (optional.isPresent) {
-            val user = optional.get()
-            when {
-                user.failedAttempts >= 3 -> throw UserException("To many failed attempts, contact support.")
-            }
-            if (!PasswordEncoder.matches(credentials.oldPsw, user.password)) {
-                user.failedAttempts++
-                save(user)
-                throw PasswordException("Password doesn't match the old password")
-            }
+    fun changePassword(credentials: ChangePswCredentialsIN) {
+        val optional = repository!!.findById(credentials.username)
+        if (optional.isEmpty) throw UserException("No user found with username: ${credentials.username}.")
 
-            if (user.isTemporaryPassword) {
-                user.isTemporaryPassword = false
-            }
-            user.password = PasswordEncoder.encode(credentials.newPsw)
-            user.updated = Date()
-            user.passwordExpires = Date(Instant.now().plus(6, ChronoUnit.MONTHS).toEpochMilli())
-            save(user)
+        val user = optional.get()
+        when {
+            user.failedAttempts >= 3 -> throw UserException("To many failed attempts, contact support.")
         }
+        if (!PasswordEncoder.matches(credentials.oldPsw, user.password)) {
+            val copy = user.copy(failedAttempts = user.failedAttempts + 1)
+            repository!!.save(copy)
+            throw PasswordException("Password doesn't match the old password")
+        }
+
+        val copy = user.copy(
+                isTemporaryPassword = false,
+                password = PasswordEncoder.encode(credentials.newPsw),
+                updated = Date(),
+                passwordExpires = Date(Instant.now().plus(6, ChronoUnit.MONTHS).toEpochMilli())
+        )
+        repository!!.save(copy)
+
     }
 
-    fun login(credentials: PswCredentials): UserTO {
-        val optional = findById(credentials.username)
-        if (optional.isPresent) {
-            val user = optional.get()
-            when {
-                user.isTemporaryPassword -> throw UserException("Temporary password needs to be changed before logging in.")
-                user.failedAttempts >= 3 -> throw UserException("To many failed attempts, contact support.")
-                !PasswordEncoder.matches(credentials.psw, user.password) -> {
-                    user.failedAttempts++
-                    save(user)
-                    throw PasswordException("Password doesn't match")
-                }
-                user.passwordExpires.before(Date()) -> throw UserException("Password has expired.")
-                else -> {
-                    user.failedAttempts = 0
-                    save(user)
-                    return UserTO(user)
-                }
+    fun login(credentials: PswCredentialsIN): UserOUT {
+        val optional = repository!!.findById(credentials.username)
+        if (optional.isEmpty) throw UserException("No user found with username: ${credentials.username}.")
+
+        val user = optional.get()
+        when {
+            user.isTemporaryPassword -> throw UserException("Temporary password needs to be changed before logging in.")
+            user.failedAttempts >= 3 -> throw UserException("To many failed attempts, contact support.")
+            !PasswordEncoder.matches(credentials.psw, user.password) -> {
+                val copy = user.copy(failedAttempts = user.failedAttempts + 1)
+                repository!!.save(copy)
+                throw PasswordException("Password doesn't match")
             }
-        } else {
-            throw UserException("A user with username ${credentials.username} could not be found.")
+            user.passwordExpires.before(Date()) -> throw UserException("Password has expired.")
+            else -> {
+                val copy = user.copy(failedAttempts = 0)
+                repository!!.save(copy)
+                return UserOUT(user)
+            }
         }
     }
 }

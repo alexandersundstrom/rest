@@ -2,7 +2,8 @@ package rest.controller
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import rest.model.User
+import rest.model.to.UserIN
+import rest.model.to.UserOUT
 import rest.service.UserService
 
 @RestController
@@ -19,13 +20,13 @@ class UserController {
     fun findById(@PathVariable id: String) = service!!.findById(id)
 
     @RequestMapping(method = [RequestMethod.POST])
-    fun createUser(@RequestBody user: User): User {
+    fun createUser(@RequestBody user: UserIN): UserOUT {
         //validation
         return service!!.create(user)
     }
 
     @RequestMapping(method = [RequestMethod.PUT], value = ["/{id}"])
-    fun updateUser(@RequestBody user: User, @PathVariable id: String?): User {
+    fun updateUser(@RequestBody user: UserIN, @PathVariable id: String?): UserOUT {
         //validation
         return service!!.save(user)
     }

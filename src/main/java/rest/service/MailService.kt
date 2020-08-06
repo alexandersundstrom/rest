@@ -1,4 +1,4 @@
-package rest.mail
+package rest.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.env.Environment
@@ -6,7 +6,7 @@ import org.springframework.core.env.get
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
-import rest.model.User
+import rest.model.db.User
 
 
 @Service

@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import rest.exception.PasswordException
 import rest.exception.UserException
-import rest.model.ChangePswCredentials
-import rest.model.PswCredentials
+import rest.model.to.ChangePswCredentialsIN
+import rest.model.to.PswCredentialsIN
 import rest.security.JWTUtil
 import rest.service.UserService
 
@@ -20,7 +20,7 @@ class LoginController {
 
 
     @RequestMapping(method = [RequestMethod.POST], value = ["/password"])
-    fun changePassword(@RequestBody credentials: ChangePswCredentials): ResponseEntity<String> {
+    fun changePassword(@RequestBody credentials: ChangePswCredentialsIN): ResponseEntity<String> {
         //validation
         try {
             service!!.changePassword(credentials)
@@ -32,7 +32,7 @@ class LoginController {
 
     @RequestMapping(method = [RequestMethod.POST], value = ["/login"])
     @ResponseBody
-    fun login(@RequestBody credentials: PswCredentials): ResponseEntity<Any> {
+    fun login(@RequestBody credentials: PswCredentialsIN): ResponseEntity<Any> {
         try {
             val user = service!!.login(credentials)
             val header = HttpHeaders()
