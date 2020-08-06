@@ -9,8 +9,10 @@ import rest.exception.PasswordException
 import rest.exception.UserException
 import rest.model.to.ChangePswCredentialsIN
 import rest.model.to.PswCredentialsIN
+import rest.model.to.UserOUT
 import rest.security.JWTService
 import rest.service.UserService
+import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/auth")
@@ -24,7 +26,6 @@ class LoginController {
 
     @RequestMapping(method = [RequestMethod.POST], value = ["/password"])
     fun changePassword(@RequestBody credentials: ChangePswCredentialsIN): ResponseEntity<String> {
-        //validation
         try {
             service!!.changePassword(credentials)
             return ResponseEntity.ok("OK")
@@ -39,7 +40,7 @@ class LoginController {
         try {
             val user = service!!.login(credentials)
             val header = HttpHeaders()
-            header.add("Set-Cookie", "token=${jwtService!!.create(user)}; Path=/")
+            header.add("Set-Cookie", "token=${jwtService!!.createToken(user)}; Path=/")
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(header)
@@ -49,5 +50,17 @@ class LoginController {
         }
     }
 
-//   TODO  update token
+    @RequestMapping(method = [RequestMethod.POST], value = ["/updateToken"])
+    @ResponseBody
+    fun updateToken(request: HttpServletRequest): ResponseEntity<Any> {
+        val user = request.getAttribute("user") as UserOUT
+        val header = HttpHeaders()
+        header.add("Set-Cookie", "token=${jwtService!!.createToken(user)}; Path=/")
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .headers(header)
+                .body(user)
+    }
+
 }

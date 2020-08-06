@@ -27,7 +27,11 @@ class JWTFilter : Filter {
                     .orElseThrow<TokenException> {
                         throw TokenException("Token cookie not found.")
                     }
-                    .let { jwtService!!.validate(it.value) }
+                    .let {
+                        jwtService!!.validateToken(it.value)
+                        val user = jwtService!!.validateTokenAndGetUser(it.value)
+                        req.setAttribute("user", user)
+                    }
         } else {
             throw TokenException("Token cookie not found.")
         }

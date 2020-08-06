@@ -14,6 +14,7 @@ import rest.model.to.UserOUT
 import rest.repository.UserRepository
 import rest.util.PasswordEncoder
 import rest.util.PswGenerator
+import java.sql.Timestamp
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -50,10 +51,10 @@ class UserService {
 
         val temporaryPassword = PswGenerator.temporaryPassword()
         val user = User(userIN).copy(
-                created = Date(),
+                created = Timestamp.from(Instant.now()),
                 password = PasswordEncoder.encode(temporaryPassword),
                 isTemporaryPassword = true,
-                passwordExpires = Date(Instant.now().plus(90, ChronoUnit.DAYS).toEpochMilli()))
+                passwordExpires = Timestamp.from(Instant.now().plus(180, ChronoUnit.DAYS)))
 
         val savedUser = repository!!.save(user)
         mailService!!.sendTemporaryPassword(savedUser, temporaryPassword)
@@ -68,7 +69,7 @@ class UserService {
 
         val toSave = User(userIN).copy(
                 password = original.password,
-                updated = Date(),
+                updated = Timestamp.from(Instant.now()),
                 isTemporaryPassword = original.isTemporaryPassword,
                 created = original.created,
                 failedAttempts = original.failedAttempts,
@@ -101,8 +102,8 @@ class UserService {
         val copy = user.copy(
                 isTemporaryPassword = false,
                 password = PasswordEncoder.encode(credentials.newPsw),
-                updated = Date(),
-                passwordExpires = Date(Instant.now().plus(90, ChronoUnit.DAYS).toEpochMilli())
+                updated = Timestamp.from(Instant.now()),
+                passwordExpires = Timestamp.from(Instant.now().plus(180, ChronoUnit.DAYS))
         )
         repository!!.save(copy)
 

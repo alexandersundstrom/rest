@@ -21,19 +21,16 @@ class UserController {
 
     @RequestMapping(method = [RequestMethod.POST])
     fun createUser(@RequestBody user: UserIN): UserOUT {
-        //validation
         return service!!.create(user)
     }
 
     @RequestMapping(method = [RequestMethod.PUT], value = ["/{id}"])
     fun updateUser(@RequestBody user: UserIN, @PathVariable id: String?): UserOUT {
-        //validation
         return service!!.save(user)
     }
 
     @RequestMapping(method = [RequestMethod.DELETE], value = ["/{id}"])
     fun deleteById(@PathVariable id: String) {
-        //validation
         service!!.deleteById(id)
     }
 
