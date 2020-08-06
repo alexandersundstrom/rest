@@ -1,5 +1,6 @@
 package rest.model.to
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import rest.model.db.Permission
 import rest.model.db.User
 import java.time.Instant
@@ -9,6 +10,7 @@ import java.util.*
 data class UserOUT(
         val username: String = "",
         val email: String = "",
+        @get:JsonProperty("isTemporaryPassword")
         val isTemporaryPassword: Boolean = true,
         val firstname: String = "",
         val lastname: String = "",

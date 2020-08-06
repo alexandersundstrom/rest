@@ -23,12 +23,11 @@ import java.util.stream.StreamSupport
 @Service
 class UserService {
     @Autowired
-    var repository: UserRepository? = null
+    private var repository: UserRepository? = null
 
     @Autowired
-    var mailService: MailService? = null;
-
-    var logger: Logger = LoggerFactory.getLogger(UserService::class.java)
+    private var mailService: MailService? = null
+    private var logger: Logger = LoggerFactory.getLogger(UserService::class.java)
 
     fun findAll(): List<UserOUT> {
         return StreamSupport.stream<User>(repository!!.findAll().spliterator(), false)
@@ -36,24 +35,25 @@ class UserService {
                 .collect(Collectors.toList())
     }
 
-    fun findById(id: String): Optional<UserOUT> {
-        val user = repository!!.findById(id)
+    fun findById(username: String): Optional<UserOUT> {
+        val user = repository!!.findById(username)
         if (user.isPresent) {
             return Optional.of(UserOUT(user.get()))
         }
         return Optional.empty()
     }
 
+    fun getUpdatedDate(username: String): Date? = repository!!.getUpdatedDate(username)
+
     fun create(userIN: UserIN): UserOUT {
-        //TODO VALIDATE
         if (repository!!.existsById(userIN.username)) throw UserException("A user already exists with username: ${userIN.username} ")
 
         val temporaryPassword = PswGenerator.temporaryPassword()
         val user = User(userIN).copy(
                 created = Date(),
-                password = temporaryPassword,
+                password = PasswordEncoder.encode(temporaryPassword),
                 isTemporaryPassword = true,
-                passwordExpires = Date(Instant.now().plus(6, ChronoUnit.MONTHS).toEpochMilli()))
+                passwordExpires = Date(Instant.now().plus(90, ChronoUnit.DAYS).toEpochMilli()))
 
         val savedUser = repository!!.save(user)
         mailService!!.sendTemporaryPassword(savedUser, temporaryPassword)
@@ -102,7 +102,7 @@ class UserService {
                 isTemporaryPassword = false,
                 password = PasswordEncoder.encode(credentials.newPsw),
                 updated = Date(),
-                passwordExpires = Date(Instant.now().plus(6, ChronoUnit.MONTHS).toEpochMilli())
+                passwordExpires = Date(Instant.now().plus(90, ChronoUnit.DAYS).toEpochMilli())
         )
         repository!!.save(copy)
 

@@ -9,14 +9,17 @@ import rest.exception.PasswordException
 import rest.exception.UserException
 import rest.model.to.ChangePswCredentialsIN
 import rest.model.to.PswCredentialsIN
-import rest.security.JWTUtil
+import rest.security.JWTService
 import rest.service.UserService
 
 @RestController
 @RequestMapping("/auth")
 class LoginController {
     @Autowired
-    var service: UserService? = null
+    private var service: UserService? = null
+
+    @Autowired
+    private var jwtService: JWTService? = null
 
 
     @RequestMapping(method = [RequestMethod.POST], value = ["/password"])
@@ -36,7 +39,7 @@ class LoginController {
         try {
             val user = service!!.login(credentials)
             val header = HttpHeaders()
-            header.add("Set-Cookie", "token=${JWTUtil.create(user)}; Path=/")
+            header.add("Set-Cookie", "token=${jwtService!!.create(user)}; Path=/")
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(header)
@@ -46,5 +49,5 @@ class LoginController {
         }
     }
 
-//    update token
+//   TODO  update token
 }

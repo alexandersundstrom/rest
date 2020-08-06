@@ -2,6 +2,8 @@ package rest.security
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import rest.exception.TokenException
 import javax.servlet.Filter
 import javax.servlet.FilterChain
@@ -9,9 +11,12 @@ import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
 
-//TODO When errors thrown, set appropiate statuscode (401 or 400)
+@Component
 class JWTFilter : Filter {
-    var logger: Logger = LoggerFactory.getLogger(JWTFilter::class.java)
+    private var logger: Logger = LoggerFactory.getLogger(JWTFilter::class.java)
+
+    @Autowired
+    private var jwtService: JWTService? = null
 
     override fun doFilter(req: ServletRequest?, res: ServletResponse?, chain: FilterChain?) {
         if (req is HttpServletRequest && req.cookies != null) {
@@ -22,7 +27,7 @@ class JWTFilter : Filter {
                     .orElseThrow<TokenException> {
                         throw TokenException("Token cookie not found.")
                     }
-                    .let { JWTUtil.validate(it.value) }
+                    .let { jwtService!!.validate(it.value) }
         } else {
             throw TokenException("Token cookie not found.")
         }

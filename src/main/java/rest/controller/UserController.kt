@@ -10,7 +10,7 @@ import rest.service.UserService
 @RequestMapping("/user")
 class UserController {
     @Autowired
-    var service: UserService? = null
+    private var service: UserService? = null
 
     @RequestMapping(method = [RequestMethod.GET])
     fun findAll() = service!!.findAll()

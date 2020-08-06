@@ -11,12 +11,11 @@ import rest.model.db.User
 
 @Service
 class MailService {
+    @Autowired
+    private val env: Environment? = null
 
     @Autowired
-    val env: Environment? = null
-
-    @Autowired
-    val emailSender: JavaMailSender? = null
+    private val emailSender: JavaMailSender? = null
 
     fun sendTemporaryPassword(user: User, psw: String) {
         val message = SimpleMailMessage()
