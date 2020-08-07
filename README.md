@@ -76,5 +76,8 @@ Optional: Inspect your database in PGAdmin
   - Password: admin
 
 ## Exceptions
-If exceptions occurs (except in the `JWTFilter), `RestExceptionHandler.kt` will handle it and return a `ResponseEntity`.
-It's easy to add new exceptions for specific responses.
+If exceptions occurs (except in the `JWTFilter`), `RestExceptionHandler.kt` will handle it and return a ResponseEntity.
+It's easy to add new exceptions for specific responses. 
+
+This way, the @RestController classes doesn't need any try catch 
+blocks.
