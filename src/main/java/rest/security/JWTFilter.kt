@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import rest.exception.TokenException
+import rest.exception.UserException
 import javax.servlet.Filter
 import javax.servlet.FilterChain
 import javax.servlet.ServletRequest
@@ -39,11 +40,15 @@ class JWTFilter : Filter {
             } else {
                 throw TokenException("Token cookie not found.", HttpStatus.UNAUTHORIZED)
             }
-        } catch (e: Exception) {
             //Needed as RestExceptionHandler only can be used by @RestController classes
+        } catch (e: Exception) {
             logger.warn(e.message, e) //TODO Remove if loggs when error thrown in JWTSERVICE
             res as HttpServletResponse
-            res.sendError(HttpStatus.UNAUTHORIZED.value(), e.message)
+            if (e is UserException) {
+                res.sendError(e.status.value(), e.message)
+            } else {
+                res.sendError(HttpStatus.UNAUTHORIZED.value(), e.message)
+            }
         }
         chain?.doFilter(req, res)
     }

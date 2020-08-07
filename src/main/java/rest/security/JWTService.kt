@@ -36,7 +36,7 @@ class JWTService() {
         val jsonUser = parseClaimsJws.body["user"] as String
         val tokenUser: UserOUT = jacksonObjectMapper().readValue(jsonUser)
         val dbUpdated = userService!!.getUpdatedDate(tokenUser.username)
-        if (!Objects.equals(dbUpdated, tokenUser.updated)) throw TokenException("User has been updated, you need to log in again.", HttpStatus.UNAUTHORIZED)
+        if (!Objects.equals(dbUpdated, tokenUser.updated)) throw TokenException("User has been updated, you need to log in again.", HttpStatus.CONFLICT)
     }
 
     fun validateTokenAndGetUser(token: String): UserOUT {
