@@ -15,9 +15,8 @@ import rest.model.to.UserOUT
 import rest.repository.UserRepository
 import rest.util.PasswordEncoder
 import rest.util.PswGenerator
-import java.sql.Timestamp
-import java.time.Instant
-import java.time.temporal.ChronoUnit
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.StreamSupport
@@ -45,17 +44,24 @@ class UserService {
         return Optional.empty()
     }
 
-    fun getUpdatedDate(username: String): Date? = repository!!.getUpdatedDate(username)
+    fun getUpdatedDate(username: String): Date? {
+        val updatedDate = repository!!.getUpdatedDate(username)
+        if (updatedDate != null) {
+            //Convert from Timestamp to Date, otherwise comparison is off on milliseconds
+            return Date(updatedDate.time)
+        }
+        return updatedDate
+    }
 
     fun create(userIN: UserIN): UserOUT {
         if (repository!!.existsById(userIN.username)) throw UserException("A user already exists with username: ${userIN.username}", HttpStatus.CONFLICT)
 
         val temporaryPassword = PswGenerator.temporaryPassword()
         val user = User(userIN).copy(
-                created = Timestamp.from(Instant.now()),
+                created = Date(LocalDateTime.now().withNano(0).toInstant(ZoneOffset.UTC).toEpochMilli()),
                 password = PasswordEncoder.encode(temporaryPassword),
                 isTemporaryPassword = true,
-                passwordExpires = Timestamp.from(Instant.now().plus(180, ChronoUnit.DAYS)))
+                passwordExpires = Date(LocalDateTime.now().plusDays(180).withNano(0).toInstant(ZoneOffset.UTC).toEpochMilli()))
 
         val savedUser = repository!!.save(user)
         mailService!!.sendTemporaryPassword(savedUser, temporaryPassword)
@@ -70,7 +76,7 @@ class UserService {
 
         val toSave = User(userIN).copy(
                 password = original.password,
-                updated = Timestamp.from(Instant.now()),
+                updated = Date(LocalDateTime.now().withNano(0).toInstant(ZoneOffset.UTC).toEpochMilli()),
                 isTemporaryPassword = original.isTemporaryPassword,
                 created = original.created,
                 failedAttempts = original.failedAttempts,
@@ -103,8 +109,8 @@ class UserService {
         val copy = user.copy(
                 isTemporaryPassword = false,
                 password = PasswordEncoder.encode(credentials.newPsw),
-                updated = Timestamp.from(Instant.now()),
-                passwordExpires = Timestamp.from(Instant.now().plus(180, ChronoUnit.DAYS))
+                updated = Date(LocalDateTime.now().withNano(0).toInstant(ZoneOffset.UTC).toEpochMilli()),
+                passwordExpires = Date(LocalDateTime.now().plusDays(180).withNano(0).toInstant(ZoneOffset.UTC).toEpochMilli())
         )
         repository!!.save(copy)
 

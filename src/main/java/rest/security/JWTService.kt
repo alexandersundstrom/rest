@@ -22,10 +22,11 @@ class JWTService() {
     @Autowired
     private var userService: UserService? = null
     private val key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
+    private val jacksonObjectMapper = jacksonObjectMapper()
 
-    fun createToken(user: UserOUT) = Jwts
+    fun createToken(user: UserOUT): String? = Jwts
             .builder()
-            .claim("user", jacksonObjectMapper().writeValueAsString(user))
+            .claim("user", jacksonObjectMapper.writeValueAsString(user))
             .setIssuedAt(Date())
             .setExpiration(Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
             .signWith(key)
@@ -34,7 +35,7 @@ class JWTService() {
     fun validateToken(token: String) {
         val parseClaimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token)
         val jsonUser = parseClaimsJws.body["user"] as String
-        val tokenUser: UserOUT = jacksonObjectMapper().readValue(jsonUser)
+        val tokenUser: UserOUT = jacksonObjectMapper.readValue(jsonUser)
         val dbUpdated = userService!!.getUpdatedDate(tokenUser.username)
         if (!Objects.equals(dbUpdated, tokenUser.updated)) throw TokenException("User has been updated, you need to log in again.", HttpStatus.CONFLICT)
     }
@@ -42,6 +43,6 @@ class JWTService() {
     fun validateTokenAndGetUser(token: String): UserOUT {
         val parseClaimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token)
         val jsonUser = parseClaimsJws.body["user"] as String
-        return jacksonObjectMapper().readValue(jsonUser)
+        return jacksonObjectMapper.readValue(jsonUser)
     }
 }

@@ -10,9 +10,8 @@ class PswGenerator() {
             val lowerCaseRule = CharacterRule(EnglishCharacterData.LowerCase, 3)
             val upperCaseRule = CharacterRule(EnglishCharacterData.UpperCase, 3)
             val digitRule = CharacterRule(EnglishCharacterData.Digit, 3)
-            val specialRule = CharacterRule(EnglishCharacterData.Special, 3)
 
-            return PasswordGenerator().generatePassword(12, lowerCaseRule, upperCaseRule, digitRule, specialRule)
+            return PasswordGenerator().generatePassword(12, lowerCaseRule, upperCaseRule, digitRule)
 
         }
     }

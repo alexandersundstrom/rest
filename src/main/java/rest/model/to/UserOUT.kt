@@ -3,7 +3,7 @@ package rest.model.to
 import com.fasterxml.jackson.annotation.JsonProperty
 import rest.model.db.Permission
 import rest.model.db.User
-import java.sql.Timestamp
+import java.util.*
 
 data class UserOUT(
         val username: String,
@@ -13,10 +13,10 @@ data class UserOUT(
         val firstname: String,
         val lastname: String,
         val permissions: MutableList<Permission>,
-        val updated: Timestamp?,
-        val created: Timestamp,
+        val updated: Date?,
+        val created: Date,
         val failedAttempts: Long,
-        val passwordExpires: Timestamp
+        val passwordExpires: Date
 ) {
     constructor(user: User) : this(
             username = user.username,

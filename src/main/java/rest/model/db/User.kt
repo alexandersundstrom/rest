@@ -2,9 +2,9 @@ package rest.model.db
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import rest.model.to.UserIN
-import java.sql.Timestamp
-import java.time.Instant
-import java.time.temporal.ChronoUnit
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.util.*
 import javax.persistence.*
 
 @Entity
@@ -20,10 +20,10 @@ data class User(
         val lastname: String = "",
         @OneToMany(cascade = [CascadeType.ALL])
         val permissions: MutableList<Permission> = mutableListOf(),
-        val updated: Timestamp? = null,
-        val created: Timestamp = Timestamp.from(Instant.now()),
+        val updated: Date? = null,
+        val created: Date = Date(LocalDateTime.now().withNano(0).toInstant(ZoneOffset.UTC).toEpochMilli()),
         val failedAttempts: Long = 0,
-        val passwordExpires: Timestamp = Timestamp.from(Instant.now().plus(180, ChronoUnit.DAYS))
+        val passwordExpires: Date = Date(LocalDateTime.now().plusDays(180).withNano(0).toInstant(ZoneOffset.UTC).toEpochMilli())
 ) {
     constructor(user: UserIN) : this(
             username = user.username,
