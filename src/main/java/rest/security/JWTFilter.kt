@@ -40,7 +40,8 @@ class JWTFilter : Filter {
                 throw TokenException("Token cookie not found.", HttpStatus.UNAUTHORIZED)
             }
         } catch (e: Exception) {
-            logger.warn(e.message, e)
+            //Needed as RestExceptionHandler only can be used by @RestController classes
+            logger.warn(e.message, e) //TODO Remove if loggs when error thrown in JWTSERVICE
             res as HttpServletResponse
             res.sendError(HttpStatus.UNAUTHORIZED.value(), e.message)
         }
