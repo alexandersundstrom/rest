@@ -1,3 +1,5 @@
 package rest.exception
 
-open class UserException(message: String?) : Exception(message)
+import org.springframework.http.HttpStatus
+
+open class UserException(message: String, val status: HttpStatus) : Exception(message)

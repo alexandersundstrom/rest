@@ -3,6 +3,7 @@ package rest.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import rest.exception.PasswordException
 import rest.exception.UserException
@@ -47,7 +48,7 @@ class UserService {
     fun getUpdatedDate(username: String): Date? = repository!!.getUpdatedDate(username)
 
     fun create(userIN: UserIN): UserOUT {
-        if (repository!!.existsById(userIN.username)) throw UserException("A user already exists with username: ${userIN.username} ")
+        if (repository!!.existsById(userIN.username)) throw UserException("A user already exists with username: ${userIN.username}", HttpStatus.CONFLICT)
 
         val temporaryPassword = PswGenerator.temporaryPassword()
         val user = User(userIN).copy(
@@ -63,7 +64,7 @@ class UserService {
 
     fun save(userIN: UserIN): UserOUT {
         val optional = repository!!.findById(userIN.username)
-        if (optional.isEmpty) throw UserException("No user found with username: ${userIN.username}.")
+        if (optional.isEmpty) throw UserException("No user found with username: ${userIN.username}.", HttpStatus.NOT_FOUND)
 
         val original = optional.get()
 
@@ -81,22 +82,22 @@ class UserService {
     }
 
     fun deleteById(id: String) {
-        if (!repository!!.existsById(id)) throw UserException("No user found with username: $id} ")
+        if (!repository!!.existsById(id)) throw UserException("No user found with username: $id} ", HttpStatus.NOT_FOUND)
         repository!!.deleteById(id)
     }
 
     fun changePassword(credentials: ChangePswCredentialsIN) {
         val optional = repository!!.findById(credentials.username)
-        if (optional.isEmpty) throw UserException("No user found with username: ${credentials.username}.")
+        if (optional.isEmpty) throw UserException("No user found with username: ${credentials.username}.", HttpStatus.NOT_FOUND)
 
         val user = optional.get()
         when {
-            user.failedAttempts >= 3 -> throw UserException("To many failed attempts, contact support.")
+            user.failedAttempts >= 3 -> throw UserException("To many failed attempts, contact support.", HttpStatus.UNAUTHORIZED)
         }
         if (!PasswordEncoder.matches(credentials.oldPsw, user.password)) {
             val copy = user.copy(failedAttempts = user.failedAttempts + 1)
             repository!!.save(copy)
-            throw PasswordException("Password doesn't match the old password")
+            throw PasswordException("Password doesn't match the old password", HttpStatus.UNAUTHORIZED)
         }
 
         val copy = user.copy(
@@ -111,18 +112,18 @@ class UserService {
 
     fun login(credentials: PswCredentialsIN): UserOUT {
         val optional = repository!!.findById(credentials.username)
-        if (optional.isEmpty) throw UserException("No user found with username: ${credentials.username}.")
+        if (optional.isEmpty) throw UserException("No user found with username: ${credentials.username}.", HttpStatus.NOT_FOUND)
 
         val user = optional.get()
         when {
-            user.isTemporaryPassword -> throw UserException("Temporary password needs to be changed before logging in.")
-            user.failedAttempts >= 3 -> throw UserException("To many failed attempts, contact support.")
+            user.passwordExpires.before(Date()) -> throw UserException("Password has expired.", HttpStatus.BAD_REQUEST)
+            user.isTemporaryPassword -> throw UserException("Temporary password needs to be changed before logging in.", HttpStatus.BAD_REQUEST)
+            user.failedAttempts >= 3 -> throw UserException("To many failed attempts, contact support.", HttpStatus.UNAUTHORIZED)
             !PasswordEncoder.matches(credentials.psw, user.password) -> {
                 val copy = user.copy(failedAttempts = user.failedAttempts + 1)
                 repository!!.save(copy)
-                throw PasswordException("Password doesn't match")
+                throw PasswordException("Password doesn't match", HttpStatus.UNAUTHORIZED)
             }
-            user.passwordExpires.before(Date()) -> throw UserException("Password has expired.")
             else -> {
                 val copy = user.copy(failedAttempts = 0)
                 repository!!.save(copy)

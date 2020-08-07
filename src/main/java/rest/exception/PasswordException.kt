@@ -1,3 +1,5 @@
 package rest.exception
 
-class PasswordException(message: String?) : UserException(message)
+import org.springframework.http.HttpStatus
+
+class PasswordException(message: String, status: HttpStatus) : UserException(message, status)

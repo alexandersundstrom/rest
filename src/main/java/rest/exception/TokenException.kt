@@ -1,3 +1,5 @@
 package rest.exception
 
-open class TokenException(message: String?) : Exception(message)
+import org.springframework.http.HttpStatus
+
+open class TokenException(message: String, val status: HttpStatus) : Exception(message)

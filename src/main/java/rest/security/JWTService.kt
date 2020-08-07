@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import rest.exception.TokenException
 import rest.model.to.UserOUT
@@ -13,6 +14,8 @@ import rest.service.UserService
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.*
+
+//TODO IN validate methods, handle Exceptions from parseClaims and cast to TokenException as well as log the original
 
 @Service
 class JWTService() {
@@ -33,7 +36,7 @@ class JWTService() {
         val jsonUser = parseClaimsJws.body["user"] as String
         val tokenUser: UserOUT = jacksonObjectMapper().readValue(jsonUser)
         val dbUpdated = userService!!.getUpdatedDate(tokenUser.username)
-        if (!Objects.equals(dbUpdated, tokenUser.updated)) throw TokenException("User has been updated, you need to log in again.")
+        if (!Objects.equals(dbUpdated, tokenUser.updated)) throw TokenException("User has been updated, you need to log in again.", HttpStatus.UNAUTHORIZED)
     }
 
     fun validateTokenAndGetUser(token: String): UserOUT {
