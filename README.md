@@ -13,8 +13,8 @@ a git ignored `application-dev.properties` under resources with the following pr
    spring.mail.port=
    spring.mail.username=
    spring.mail.password=
-   spring.mail.properties.mail.smtp.auth=true
-   spring.mail.properties.mail.smtp.starttls.enable=true
+   spring.mail.properties.mail.smtp.auth=true (depends on provider)
+   spring.mail.properties.mail.smtp.starttls.enable=true (depends on provider)
    ```
  
 All endpoints accessed when logged in is passing through the `JWTFilter.kt`, where we check the JWT. This is set in 
